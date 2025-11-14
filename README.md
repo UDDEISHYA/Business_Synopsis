@@ -25,7 +25,7 @@ import matplotlib.pyplot as plt
 ## Installation
 
 ```bash
-pip install pandas numpy matplotlib openpyxl
+pip install pandas numpy matplotlib 
 ```
 
 ## Data Loading
@@ -33,18 +33,36 @@ pip install pandas numpy matplotlib openpyxl
 The project begins by loading three Excel datasets into pandas DataFrames:
 
 ```python
-sales = pd.read_excel(r"C:\Users\Lenovo\Downloads\Sales_target_1.xlsx")
-orders_list = pd.read_excel(r"C:\Users\Lenovo\Downloads\List_of_Orders_1.xlsx")
-order_details = pd.read_excel(r"C:\Users\Lenovo\Downloads\Order_Details_1.xlsx")
+sales = pd.read_excel(r"Your_File_Path")
+orders_list = pd.read_excel(r"Your_File_Path")
+order_details = pd.read_excel(r"Your_File_Path")
 ```
 
 ## Analysis Parts
 
 ### Part 1: Sales and Profitability Analysis
 
-#### Question 1: Category Sales Analysis
+#### Question 1: Calculate the total sales (Amount) for each category across all orders. 
 
 Calculates total sales for each category by merging order data:
+```
+python
+merged_df = pd.merge(
+    orders_list,
+    order_details,
+    on="Order ID",   
+    how="inner"      
+)
+
+category_sales = (
+    merged_df
+    .groupby("Category", as_index=False)["Amount"]
+    .sum()
+    .rename(columns={"Amount": "Total Sales"})
+)
+
+print(category_sales)
+```
 
 **Key Findings:**
 
