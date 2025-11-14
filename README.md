@@ -202,13 +202,82 @@ print(bottom_margin_cat)
 
 Analyzes target fluctuations for Furniture category:
 
+```python
+furniture_target = sales[sales["Category"] == "Furniture"].copy()
+
+# Sorting by Month so the percent change is calculated in the correct order
+furniture_target = furniture_target.sort_values("Month of Order Date")
+
+# Calculating month-over-month % change in target sales
+furniture_target["MoM_Target_Change_%"] = (
+    furniture_target["Target"].pct_change() * 100
+)
+
+print(furniture_target[["Month of Order Date", "Category", "Target", "MoM_Target_Change_%"]])
+```
+
+
 **Key Observations:**
 
 * Furniture targets show relatively stable month-over-month changes
 * Largest drop: -11.86% in April 2025
 * Generally maintains targets between ₹10,400 - ₹11,800
 
-#### Question 2: Significant Target Fluctuations
+#### Question 2: Analyzing Data For Significant Target Fluctuations
+
+```python
+sales["Month of Order Date"] = pd.to_datetime(sales["Month of Order Date"])
+
+# Work at Year-Month level
+sales["Month"] = sales["Month of Order Date"].dt.to_period("M")
+
+# Aggregating in case there are multiple rows per category+month
+monthly_cat = (
+    sales
+    .groupby(["Month", "Category"], as_index=False)["Target"]
+    .sum()
+)
+
+# Sorting and computing MoM % change in Target for each category
+monthly_cat = monthly_cat.sort_values(["Category", "Month"])
+monthly_cat["Target_MoM_%"] = (
+    monthly_cat
+    .groupby("Category")["Target"]
+    .pct_change() * 100
+)
+
+# Absolute MoM % for easier “significance” checks
+monthly_cat["Target_MoM_abs_%"] = monthly_cat["Target_MoM_%"].abs()
+
+# Threshold for “significant” jump/drop (you can tweak this)
+threshold = 15  # 15% change or more
+monthly_cat["Significant_Change"] = monthly_cat["Target_MoM_abs_%"] > threshold
+
+# Convert Month period to timestamp for plotting
+monthly_cat["Month_ts"] = monthly_cat["Month"].dt.to_timestamp()
+
+print("Monthly targets with MoM % change and significant flags:")
+print(monthly_cat)
+```
+
+```python
+# Overall trend: line chart of Target by category
+
+plt.figure(figsize=(10, 5))
+
+for cat, grp in monthly_cat.groupby("Category"):
+    plt.plot(grp["Month_ts"], grp["Target"], marker="o", label=cat)
+
+plt.title("Monthly Target by Category (Trend & Spikes)")
+plt.xlabel("Month")
+plt.ylabel("Target")
+plt.xticks(rotation=45)
+plt.legend()
+plt.tight_layout()
+plt.show()
+```
+<img src = "assets/img1.png">
+
 
 Identifies months with target changes >15%:
 
