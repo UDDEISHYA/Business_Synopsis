@@ -259,26 +259,19 @@ monthly_cat["Month_ts"] = monthly_cat["Month"].dt.to_timestamp()
 print("Monthly targets with MoM % change and significant flags:")
 print(monthly_cat)
 ```
+**Visualization Features:**
 
-```python
-# Overall trend: line chart of Target by category
-
-plt.figure(figsize=(10, 5))
-
-for cat, grp in monthly_cat.groupby("Category"):
-    plt.plot(grp["Month_ts"], grp["Target"], marker="o", label=cat)
-
-plt.title("Monthly Target by Category (Trend & Spikes)")
-plt.xlabel("Month")
-plt.ylabel("Target")
-plt.xticks(rotation=45)
-plt.legend()
-plt.tight_layout()
-plt.show()
-```
-<img src = "assets/img1.png">
-
-
+* Monthly target trend lines by category
+* <img src = "assets/img1.png">
+* Month-over-Month percentage change charts
+* <img src = "assets/img2a.png>
+* <img src = "assets/img2b.png>
+* <img src = "assets/img2c.png>
+* <img src = "assets/img2d.png>
+* Total portfolio target analysis
+* <img src = "assets/img3.png>
+* Statistical distribution analysis with bell curves
+* <img src = "assets/img4.png">
 Identifies months with target changes >15%:
 
 **Significant Changes Detected:**
@@ -287,12 +280,7 @@ Identifies months with target changes >15%:
 * **Electronics**: -43.75% in April (most dramatic change)
 * **Furniture**: No changes exceeding 15% threshold
 
-**Visualization Features:**
 
-* Monthly target trend lines by category
-* Month-over-Month percentage change charts
-* Total portfolio target analysis
-* Statistical distribution analysis with bell curves
 
 ### Part 3: Regional Performance Insights
 
