@@ -45,8 +45,7 @@ order_details = pd.read_excel(r"Your_File_Path")
 #### Question 1: Calculate the total sales (Amount) for each category across all orders. 
 
 Calculates total sales for each category by merging order data:
-```
-python
+```python
 merged_df = pd.merge(
     orders_list,
     order_details,
@@ -70,13 +69,38 @@ print(category_sales)
 * **Clothing**: ₹139,054
 * **Furniture**: ₹127,181 (lowest revenue)
 
-#### Question 2: Profit Metrics Analysis
+#### Question 2: For each category, calculate the average profit per order and total profit margin (profit as a percentage of Amount).
 
 Computes comprehensive profit metrics including:
 
 * Average profit per order
 * Total profit margin percentage
 * Unique order counts per category
+
+```python
+#Group by Category and calculate totals + number of unique orders
+category_stats = (
+    merged_df
+    .groupby("Category")
+    .agg(
+        Total_Amount=("Amount", "sum"),
+        Total_Profit=("Profit", "sum"),
+        Unique_Orders=("Order ID", "nunique")  # distinct orders in that category
+    )
+)
+
+# Calculate
+
+category_stats["Avg_Profit_per_Order"] = (
+    category_stats["Total_Profit"] / category_stats["Unique_Orders"]
+)
+
+category_stats["Total_Profit_Margin_%"] = (
+    category_stats["Total_Profit"] / category_stats["Total_Amount"] * 100
+)
+
+print(category_stats)
+```
 
 **Key Metrics:**
 
@@ -86,7 +110,77 @@ Computes comprehensive profit metrics including:
 | Clothing | ₹28.40 | 8.03% |
 | Furniture | ₹12.35 | 1.81% |
 
-#### Question 3: Performance Classification
+#### Question 3: Identify the top-performing and underperforming categories based on
+* Total sales (Amount) for each category
+* Average profit per order
+* Total profit margin percentage
+
+```python
+#Calculating category-level metrics
+category_stats = (
+    merged_df
+    .groupby("Category")
+    .agg(
+        Total_Amount=("Amount", "sum"),
+        Total_Profit=("Profit", "sum"),
+        Unique_Orders=("Order ID", "nunique")
+    )
+)
+
+# Avoiding divide-by-zero just in case
+category_stats = category_stats[category_stats["Total_Amount"] != 0]
+
+#Adding derived metrics:
+# - Average profit per order
+# - Total profit margin (%)
+category_stats["Avg_Profit_per_Order"] = (
+    category_stats["Total_Profit"] / category_stats["Unique_Orders"]
+)
+
+category_stats["Total_Profit_Margin_%"] = (
+    category_stats["Total_Profit"] / category_stats["Total_Amount"] * 100
+)
+
+
+category_stats = category_stats.reset_index()
+
+print("=== Category Metrics ===")
+print(category_stats)
+
+#Identifying top-performing & underperforming categories
+
+# Top / bottom by Total Sales (Amount)
+top_sales_cat    = category_stats.loc[category_stats["Total_Amount"].idxmax()]
+bottom_sales_cat = category_stats.loc[category_stats["Total_Amount"].idxmin()]
+
+# Top / bottom by Avg Profit per Order
+top_avg_profit_cat    = category_stats.loc[category_stats["Avg_Profit_per_Order"].idxmax()]
+bottom_avg_profit_cat = category_stats.loc[category_stats["Avg_Profit_per_Order"].idxmin()]
+
+# Top / bottom by Profit Margin
+top_margin_cat    = category_stats.loc[category_stats["Total_Profit_Margin_%"].idxmax()]
+bottom_margin_cat = category_stats.loc[category_stats["Total_Profit_Margin_%"].idxmin()]
+
+print("\n=== Top / Underperforming Categories ===")
+
+print("\nTop category by TOTAL SALES:")
+print(top_sales_cat)
+
+print("\nUnderperforming category by TOTAL SALES:")
+print(bottom_sales_cat)
+
+print("\nTop category by AVERAGE PROFIT PER ORDER:")
+print(top_avg_profit_cat)
+
+print("\nUnderperforming category by AVERAGE PROFIT PER ORDER:")
+print(bottom_avg_profit_cat)
+
+print("\nTop category by PROFIT MARGIN (%):")
+print(top_margin_cat)
+
+print("\nUnderperforming category by PROFIT MARGIN (%):")
+print(bottom_margin_cat)
+```
 
 **Top Performers:**
 
