@@ -1,5 +1,3 @@
-# Business_Synopsis
-Integrated sales analytics project that merges order, order-detail and target datasets to evaluate category-level sales and profitability, month-over-month target achievement, and regional performance by state. Includes identification of top/underperforming segments, regional disparities, and data-driven recommendations for performance improvement.
 # Sales and Profitability Analysis Project
 
 ## Overview
@@ -273,11 +271,6 @@ Identifies months with target changes >15%:
 * Southern states (Tamil Nadu, Andhra Pradesh) show profitability challenges
 * Madhya Pradesh and Maharashtra drive volume but need margin optimization
 
-## Output Files
-
-The analysis generates the following output file:
-
-* `Top5_States_Sales_Profit_Summary.xlsx` \- Summary of top 5 states by order count
 
 ## Visualizations
 
