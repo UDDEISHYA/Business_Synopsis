@@ -264,14 +264,14 @@ print(monthly_cat)
 * Monthly target trend lines by category
  <img src = "assets/img1.png">
 * Month-over-Month percentage change charts
-<img src = "assets/img2a.png>
-<img src = "assets/img2b.png>
-<img src = "assets/img2c.png>
-<img src = "assets/img2d.png>
+<img src = "assets/img2a.png">
+<img src = "assets/img2b.png">
+<img src = "assets/img2c.png">
+<img src = "assets/img2d.png">
 * Total portfolio target analysis
-<img src = "assets/img3.png>
+<img src = "assets/img3.png">
 * Statistical distribution analysis with bell curves
-<img src = "assets/img4.png">
+ <img src = "assets/img4.png">
 Identifies months with target changes >15%:
 
 **Significant Changes Detected:**
@@ -284,9 +284,51 @@ Identifies months with target changes >15%:
 
 ### Part 3: Regional Performance Insights
 
-#### Question 1: Top 5 States Analysis
+#### Question 1: Identify the top 5 states with the highest order count. For each of these states, calculate the total sales and average profit. 
+```python
+# Top 5 states by ORDER COUNT (from List_of_Orders)
+state_order_counts = (
+    orders_list
+    .groupby("State")["Order ID"]
+    .nunique()                # distinct orders per state
+    .sort_values(ascending=False)
+)
 
+top_5_states = state_order_counts.head(5).index.tolist()
+print("Top 5 states by order count:")
+print(state_order_counts.head(5))
+
+#  Merge orders with order_details to attach Amount & Profit to each order/state
+merged = pd.merge(
+    orders_list,
+    order_details,
+    on="Order ID",
+    how="inner"
+)
+
+# Filter merged data for ONLY those top 5 states
+top_states_data = merged[merged["State"].isin(top_5_states)].copy()
+
+# For each of these states, calculate:
+#    - total sales (sum of Amount)
+#    - average profit (mean of Profit)
+state_summary = (
+    top_states_data
+    .groupby("State")
+    .agg(
+        Order_Count=("Order ID", "nunique"),
+        Total_Sales=("Amount", "sum"),
+        Avg_Profit=("Profit", "mean")
+    )
+    .sort_values("Order_Count", ascending=False)
+)
+
+print("\nSummary for top 5 states:")
+print(state_summary)
+
+```
 **Top 5 States by Order Count:**
+
 
 1. **Madhya Pradesh**: 101 orders, ₹105,140 sales, ₹16.33 avg profit
 2. **Maharashtra**: 90 orders, ₹95,348 sales, ₹21.30 avg profit
@@ -294,7 +336,73 @@ Identifies months with target changes >15%:
 4. **Gujarat**: 27 orders, ₹21,058 sales, ₹5.34 avg profit
 5. **Punjab**: 25 orders, ₹16,786 sales, -₹10.15 avg profit (loss)
 
-#### Question 2: Regional Disparities
+#### Question 2: Highlight any regional disparities in sales or profitability. Suggest regions or cities that should be prioritized for improvement.
+```python
+merged = pd.merge(
+    orders_list,
+    order_details,
+    on="Order ID",
+    how="inner"
+)
+
+# Aggregate metrics by State
+state_summary = (
+    merged
+    .groupby("State")
+    .agg(
+        Total_Sales=("Amount", "sum"),
+        Total_Profit=("Profit", "sum"),
+        Order_Count=("Order ID", "nunique")
+    )
+)
+
+# Calculate additional profitability metrics
+state_summary["Profit_Margin_%"] = (
+    state_summary["Total_Profit"] / state_summary["Total_Sales"] * 100
+)
+
+state_summary["Avg_Profit_per_Order"] = (
+    state_summary["Total_Profit"] / state_summary["Order_Count"]
+)
+
+# Sort states by Total_Sales (for nicer plots)
+state_summary = state_summary.sort_values("Total_Sales", ascending=False)
+
+print("State-level sales and profitability summary:")
+print(state_summary)
+
+```
+```python
+# VISUALIZATION 1:
+# Bar chart – Total Sales by State
+
+plt.figure(figsize=(12, 6))
+plt.bar(state_summary.index, state_summary["Total_Sales"])
+plt.title("Total Sales by State")
+plt.xlabel("State")
+plt.ylabel("Total Sales (Amount)")
+plt.xticks(rotation=48)
+plt.tight_layout()
+plt.show()
+```
+<img src = "assets/img6.png" >
+
+```python
+# VISUALIZATION 2:
+# Bar chart – Profit Margin % by State
+
+plt.figure(figsize=(12, 6))
+plt.bar(state_summary.index, state_summary["Profit_Margin_%"])
+plt.title("Profit Margin (%) by State")
+plt.xlabel("State")
+plt.ylabel("Profit Margin (%)")
+plt.xticks(rotation=48)
+plt.tight_layout()
+plt.show()
+```
+<img src = "assets/img7.png">
+
+
 
 **High Performers:**
 
@@ -329,15 +437,6 @@ Identifies months with target changes >15%:
 * Madhya Pradesh and Maharashtra drive volume but need margin optimization
 
 
-## Visualizations
-
-The project includes comprehensive visualizations:
-
-* Category sales comparison charts
-* Monthly target trend analysis
-* Month-over-Month change tracking
-* Regional performance comparisons
-* Statistical distribution plots
 
 ## Usage
 
