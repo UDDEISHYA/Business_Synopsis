@@ -262,16 +262,16 @@ print(monthly_cat)
 **Visualization Features:**
 
 * Monthly target trend lines by category
-* <img src = "assets/img1.png">
+ <img src = "assets/img1.png">
 * Month-over-Month percentage change charts
-* <img src = "assets/img2a.png>
-* <img src = "assets/img2b.png>
-* <img src = "assets/img2c.png>
-* <img src = "assets/img2d.png>
+<img src = "assets/img2a.png>
+<img src = "assets/img2b.png>
+<img src = "assets/img2c.png>
+<img src = "assets/img2d.png>
 * Total portfolio target analysis
-* <img src = "assets/img3.png>
+<img src = "assets/img3.png>
 * Statistical distribution analysis with bell curves
-* <img src = "assets/img4.png">
+<img src = "assets/img4.png">
 Identifies months with target changes >15%:
 
 **Significant Changes Detected:**
